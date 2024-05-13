@@ -7,10 +7,11 @@ const getData = () =>
             const localDate = new Date(v.local_time)
             return {
                 yearMonth: `${localDate.getFullYear()} - ${localDate.toLocaleString('default', { month: 'long' })}`,
+                date: localDate,
                 day: localDate.getDate(),
                 distance: +v.distance
             }
-        }))
+        }).sort((a, b) => a.date - b.date))
 
 getData().then(data => {
     addHeatmap(
@@ -21,8 +22,8 @@ getData().then(data => {
             {
                 left: 132,
                 right: 16,
-                top: 8,
-                bottom: 56
+                top: 56,
+                bottom: 16
             }
         ),
         data
