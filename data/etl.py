@@ -173,6 +173,8 @@ with open(get_path("activities_records.pkl"), "rb") as f:
 
 df = pd.DataFrame.from_records(activities)
 
+df = df[~df["id"].isnull()]
+
 print(df.head())
 print(df.info())
 
