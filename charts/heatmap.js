@@ -1,8 +1,9 @@
 import { colours } from '../constant.js'
 import { getTextWidth } from '../components/utils.js'
+import { addLegend } from '../components/colour-legend/script.js'
 
 export const addChart = (chartProps, data) => {
-    const { chart, width, height } = chartProps
+    const { chart, width, height, margin } = chartProps
 
     const x = d3
         .scaleBand()
@@ -21,7 +22,7 @@ export const addChart = (chartProps, data) => {
     const colour = d3
         .scaleLinear()
         .range(['white', colours.default])
-        .domain([0, d3.max(data, d => d.distance)])
+        .domain([0, Math.trunc(d3.max(data, d => d.distance) / 1e3) * 1e3])
 
     chart
         .selectAll()
@@ -34,6 +35,29 @@ export const addChart = (chartProps, data) => {
         .attr('rx', 4)
         .attr('ry', 4)
         .style('fill', d => colour(d.distance))
+
+    chart
+        .append('g')
+        .attr('id', 'colour-legend')
+
+    const colourLegendWidth = 100
+
+    const colourLegendAxis = d3
+        .scaleLinear()
+        .domain(colour.domain())
+        .range([0, colourLegendWidth])
+
+    addLegend({
+        id: 'colour-legend',
+        title: 'Distance',
+        colourScale: colour,
+        axis: colourLegendAxis,
+        width: colourLegendWidth,
+        xPos: -margin.left + 4,
+        yPos: -margin.top + 8,
+        textColour: colours.axis,
+        axisTickFormat: d => `${d3.format('.2s')(d).replace('.0', '').replace('k', 'km')}`
+    })
 
     // Adding axes
     chart

@@ -22,7 +22,7 @@ getData().then(data => {
             {
                 left: 132,
                 right: 16,
-                top: 56,
+                top: 64,
                 bottom: 16
             }
         ),
