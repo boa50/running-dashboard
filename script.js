@@ -20,7 +20,7 @@ getData().then(data => {
             document.getElementById('chart1-container').offsetWidth,
             document.getElementById('chart1-container').offsetHeight,
             {
-                left: 132,
+                left: 148,
                 right: 16,
                 top: 72,
                 bottom: 16

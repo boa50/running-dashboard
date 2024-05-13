@@ -18,7 +18,7 @@ export const addChart = (chartProps, data) => {
         .range([height, 0])
         .padding(0.05)
 
-    const years = [...new Set(data.map(d => d.yearMonth.substring(0, 4)))].reverse()
+    const years = [...new Set(data.map(d => d.yearMonth.substring(0, 4)))]
 
     const colour = d3
         .scaleLinear()
@@ -117,7 +117,7 @@ export const addChart = (chartProps, data) => {
                 .selectAll('y-axis-macro-groups')
                 .data(years)
                 .join('text')
-                .attr('x', -72)
+                .attr('x', -86)
                 .attr('y', (d, i) => i * (height / years.length) + (height / years.length) / 2)
                 .attr('dominant-baseline', 'middle')
                 .text(d => d)
@@ -150,6 +150,7 @@ export const addChart = (chartProps, data) => {
         `${chart.attr('id').split('-')[0]}-container`,
         d => `
         <strong>${d.date.toLocaleString('en-AU', {
+            weekday: 'short',
             year: 'numeric',
             month: 'long',
             day: 'numeric',
