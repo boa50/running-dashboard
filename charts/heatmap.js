@@ -73,8 +73,8 @@ export const addChart = (chartProps, data) => {
         colourScale: colour,
         axis: colourLegendAxis,
         width: colourLegendWidth,
-        xPos: -margin.left + 4,
-        yPos: -margin.top + 8,
+        xPos: width - margin.right - colourLegendWidth,
+        yPos: -margin.top,
         textColour: colours.axis,
         axisTickFormat: formatKilometers
     })
@@ -149,7 +149,11 @@ export const addChart = (chartProps, data) => {
     addTooltip(
         `${chart.attr('id').split('-')[0]}-container`,
         d => `
-        <strong>${d.yearMonth}</strong>
+        <strong>${d.date.toLocaleString('en-AU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        })}</strong>
         <div style="display: flex; justify-content: space-between">
             <span>Distance:&emsp;</span>
             <span>${formatKilometers(d.distance)}</span>
