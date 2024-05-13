@@ -6,6 +6,17 @@ import { addHighlightTooltip as addTooltip } from '../components/tooltip/script.
 export const addChart = (chartProps, data) => {
     const { chart, width, height, margin } = chartProps
 
+    const dataGrouped = d3
+        .flatGroup(data, d => d.date.toISOString().split('T')[0])
+        .map(d => {
+            return {
+                yearMonth: d[1][0].yearMonth,
+                date: d[1][0].date,
+                day: d[1][0].day,
+                distance: d[1].reduce((total, current) => total + current.distance, 0)
+            }
+        })
+
     const x = d3
         .scaleBand()
         .domain([...new Set(data.map(d => d.day))].sort((a, b) => a - b))
@@ -23,11 +34,11 @@ export const addChart = (chartProps, data) => {
     const colour = d3
         .scaleLinear()
         .range(['white', colours.default])
-        .domain([0, Math.trunc(d3.max(data, d => d.distance) / 1e3) * 1e3])
+        .domain([0, Math.trunc(d3.max(dataGrouped, d => d.distance) / 1e3) * 1e3])
 
     chart
         .selectAll('.data-point')
-        .data(data)
+        .data(dataGrouped)
         .join('rect')
         .attr('class', 'data-point')
         .attr('x', d => x(d.day))
@@ -40,7 +51,7 @@ export const addChart = (chartProps, data) => {
 
     chart
         .selectAll('.tooltip-point')
-        .data(data)
+        .data(dataGrouped)
         .join('rect')
         .attr('class', 'tooltip-point')
         .attr('x', d => x(d.day))
