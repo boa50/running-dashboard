@@ -1,2 +1,7 @@
+node_modules
+package-lock.json
+
 data/activities
 data/activities_records.pkl
+components
+lib
