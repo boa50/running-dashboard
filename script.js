@@ -19,8 +19,7 @@ getData().then(data => {
 
     d3
         .select('#chart1-title')
-        .html(`Heatmap showing all the tracked activities, which
-        contributed to covering more than 
+        .html(`All my tracked activities, which contributed to covering more than 
         <span class="font-extrabold" style="color: ${colours.annotationPoint};">${totalKm}km</span>`)
 
     addHeatmap(
