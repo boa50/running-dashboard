@@ -1,0 +1,16 @@
+.card {
+    border: 1px solid #6b7280;
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card .title {
+    color: #0369a1;
+    font-weight: 500;
+}
+
+.card .content {
+    font-size: 1.75rem;
+}

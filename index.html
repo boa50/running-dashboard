@@ -2,9 +2,8 @@
 
 <head>
     <meta charset="utf-8">
-    <title>My Runnings</title>
+    <title>My Road to Marathons</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" href="./style.css"> -->
     <script src="lib/tailwind_3_4_3.min.js"></script>
 </head>
 
@@ -13,23 +12,18 @@
     <div id="header" class="flex flex-row p-4 mb-4 bg-slate-50">
         <div class="flex flex-row self-center items-center">
             <!-- PAGE LOGO -->
-            <!-- <img src="./img/logo.svg" alt="dashboard logo" class="max-h-10 mx-4" /> -->
-            <h1 id="title" class="text-3xl text-gray-600 self-center font-medium">My Runnings</h1>
-        </div>
-
-        <div class="flex-auto"></div>
-
-        <!-- RIGHT SIDE HEADER -->
-        <div id="controls" class="flex flex-row space-x-8 mr-8">
+            <img src="./img/logo.svg" alt="dashboard logo" class="max-h-10 mx-4" />
+            <h1 id="title" class="text-3xl text-gray-600 self-center font-medium">My Road to Marathons</h1>
         </div>
     </div>
 
     <!-- CONTENT -->
     <div class="mx-8">
-        <div id="charts" class="grid grid-cols-5 gap-4">
-            <div class="bg-white/75 px-4 py-2 col-span-4 rounded-sm">
+        <div id="charts" class="grid gap-4">
+            <div
+                class="bg-white/75 px-4 py-2 rounded-sm justify-self-center self-center max-w-[95vw] h-[87vh] aspect-video">
                 <div id="chart1-container" class="aspect-video">
-                    <h3 class="text-base text-gray-700 font-medium">My road to marathons</h3>
+                    <h3 id="chart1-title" class="text-base text-gray-700 font-medium">&nbsp;</h3>
                     <svg id="chart1"></svg>
                 </div>
             </div>

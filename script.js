@@ -1,3 +1,4 @@
+import { colours } from "./constant.js"
 import { getChart } from "./components/utils.js"
 import { addChart as addHeatmap } from "./charts/heatmap.js"
 
@@ -14,6 +15,14 @@ const getData = () =>
         }).sort((a, b) => a.date - b.date))
 
 getData().then(data => {
+    const totalKm = Math.trunc(data.reduce((total, d) => total + d.distance, 0) / 1e6) * 1e3
+
+    d3
+        .select('#chart1-title')
+        .html(`Heatmap showing all the tracked activities, which
+        contributed to covering more than 
+        <span class="font-extrabold" style="color: ${colours.annotationPoint};">${totalKm}km</span>`)
+
     addHeatmap(
         getChart(
             'chart1',
@@ -23,7 +32,7 @@ getData().then(data => {
                 left: 148,
                 right: 384,
                 top: 72,
-                bottom: 16
+                bottom: 32
             }
         ),
         data

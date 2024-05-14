@@ -47,7 +47,7 @@ export const addChart = (chartProps, data) => {
 
     const colour = d3
         .scaleLinear()
-        .range(['white', colours.default])
+        .range(['transparent', d3.hsl(colours.default).darker(0.5)])
         .domain([0, Math.trunc(d3.max(dataGrouped, d => d.distance) / 1e3) * 1e3])
 
     chart
