@@ -21,7 +21,7 @@ getData().then(data => {
             document.getElementById('chart1-container').offsetHeight,
             {
                 left: 148,
-                right: 16,
+                right: 384,
                 top: 72,
                 bottom: 16
             }

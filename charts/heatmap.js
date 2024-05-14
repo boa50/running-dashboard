@@ -23,13 +23,27 @@ export const addChart = (chartProps, data) => {
         .range([0, width])
         .padding(0.05)
 
+    const yearsMonths = [...new Set(data.map(d => d.yearMonth))]
+
     const y = d3
         .scaleBand()
-        .domain([...new Set(data.map(d => d.yearMonth))].reverse())
+        .domain([...yearsMonths].reverse())
         .range([height, 0])
         .padding(0.05)
 
-    const years = [...new Set(data.map(d => d.yearMonth.substring(0, 4)))]
+    const years = d3
+        .flatGroup(yearsMonths.map(d => {
+            return {
+                year: d.substring(0, 4),
+                month: d.substring(7)
+            }
+        }), d => d.year)
+        .map(d => {
+            return {
+                year: d[0],
+                qtdMonths: d[1].length
+            }
+        })
 
     const colour = d3
         .scaleLinear()
@@ -69,7 +83,7 @@ export const addChart = (chartProps, data) => {
         .append('g')
         .attr('id', 'colour-legend')
 
-    const colourLegendWidth = 100
+    const colourLegendWidth = 128
 
     const colourLegendAxis = d3
         .scaleLinear()
@@ -84,7 +98,7 @@ export const addChart = (chartProps, data) => {
         colourScale: colour,
         axis: colourLegendAxis,
         width: colourLegendWidth,
-        xPos: width - margin.right - colourLegendWidth,
+        xPos: width - colourLegendWidth - 16,
         yPos: -margin.top,
         textColour: colours.axis,
         axisTickFormat: formatKilometers
@@ -124,14 +138,31 @@ export const addChart = (chartProps, data) => {
                 .tickFormat(d => d.substring(7))
         )
         .call(g => {
+            const yearMonthHeight = height / yearsMonths.length
+            const getGap = i => i == 0 ?
+                0 :
+                yearMonthHeight * years.slice(0, i).reduce((total, d) => total + d.qtdMonths, 0)
+
             g
                 .selectAll('y-axis-macro-groups')
                 .data(years)
                 .join('text')
                 .attr('x', -86)
-                .attr('y', (d, i) => i * (height / years.length) + (height / years.length) / 2)
+                .attr('y', (d, i) => getGap(i) + (yearMonthHeight * d.qtdMonths / 2))
                 .attr('dominant-baseline', 'middle')
-                .text(d => d)
+                .text(d => d.year)
+
+            g
+                .selectAll('y-axis-macro-groups-line')
+                .data(years)
+                .join('line')
+                .attr('x1', -10)
+                .attr('x2', -120)
+                .attr('y1', (d, i) => getGap(i))
+                .attr('y2', (d, i) => getGap(i))
+                .attr('stroke-width', 1)
+                .attr('stroke', (d, i) => i > 0 ? colours.axis : 'transparent')
+                .attr('opacity', 0.5)
         })
         .call(g => {
             let maxTickWidth = 0
