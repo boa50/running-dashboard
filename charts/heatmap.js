@@ -104,7 +104,7 @@ export const addChart = (chartProps, data) => {
         axisTickFormat: formatKilometers
     })
 
-    // Adding axes
+    // Adding axes - start
     chart
         .append('g')
         .attr('class', 'x-axis-group')
@@ -187,6 +187,47 @@ export const addChart = (chartProps, data) => {
             g.select('.domain').attr('stroke', 'transparent')
             g.selectAll('text').attr('fill', colours.axis)
         })
+    // Adding axes - end
+
+    // Adding custom annotations - start
+    const annotations = chart
+        .append('g')
+        .attr('class', 'chart-annotations')
+        .attr('fill', '#4b5563')
+
+    annotations
+        .append('text')
+        .attr('class', 'text-base font-medium')
+        .attr('x', width + margin.right / 2)
+        .attr('y', -margin.top / 2)
+        .attr('text-anchor', 'middle')
+        .text('Timeline')
+
+    const addAnnotation = (yearMonth, txt) => {
+        annotations
+            .append('text')
+            .attr('class', 'text-sm font-base')
+            .attr('x', width + 16)
+            .attr('y', y(yearMonth) + y.bandwidth() / 2)
+            .attr('text-anchor', 'start')
+            .attr('dominant-baseline', 'middle')
+            .text(txt)
+    }
+
+    addAnnotation('2021 - April', 'In the beginning, the running sessions were more')
+    addAnnotation('2021 - May', 'inconsistent and purposeless')
+    addAnnotation('2021 - October', 'On 14 October 2021, I completed my first half-marathon')
+    addAnnotation('2022 - November', 'After more than one year, on 27 November 2022,')
+    addAnnotation('2022 - December', 'I finished my first marathon in Brasilia, Brazil.')
+    addAnnotation('2023 - January', 'However, after returning to training, I got injured until')
+    addAnnotation('2023 - February', 'March 2023')
+    addAnnotation('2023 - May', 'After a long period of struggling with my injury, I decided')
+    addAnnotation('2023 - June', 'to focus on recovering my stamina to rerun a marathon')
+    addAnnotation('2023 - August', 'On 27 August 2023, I accomplished my mission and ran')
+    addAnnotation('2023 - September', 'the Adelaide Marathon in Australia')
+    addAnnotation('2024 - March', 'On 3 March 2024, I ran the amazing Tokyo Marathon')
+    addAnnotation('2024 - April', 'One month later, I completed my first 50km race')
+    // Adding custom annotations - end
 
     addTooltip(
         `${chart.attr('id').split('-')[0]}-container`,
