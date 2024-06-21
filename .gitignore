@@ -1,4 +1,9 @@
-node_modules
+node_modules/*
+
+!node_modules/visual-components/
+node_modules/visual-components/package.json
+node_modules/visual-components/README.md
+
 package-lock.json
 
 data/activities
