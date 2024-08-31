@@ -2,37 +2,39 @@
 
 <head>
     <meta charset="utf-8">
-    <title>PAGE TITLE</title>
+    <title>My Road to Marathons</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../lib/tailwind_3_4_3.min.js"></script>
+    <script src="./lib/tailwind_3_4_3.min.js"></script>
 </head>
 
-<body class="bg-gray-300 font-sans">
+<body class="bg-gray-100 font-sans">
     <!-- HEADER -->
     <div id="header" class="flex flex-row p-4 mb-4 bg-slate-50">
         <div class="flex flex-row self-center items-center">
             <!-- PAGE LOGO -->
-            <!-- <img src="./img/logo.svg" alt="dashboard logo" class="max-h-8 md:max-h-10 mx-2 md:mx-4" /> -->
-            <h1 id="title" class="text-2xl md:text-3xl text-gray-600 self-center font-medium">PAGE TITLE</h1>
-        </div>
-
-        <div class="flex-auto"></div>
-
-        <!-- RIGHT SIDE HEADER -->
-        <div id="controls" class="flex flex-row space-x-8 mr-8">
+            <img src="./img/logo.svg" alt="dashboard logo" class="max-h-10 mx-4" />
+            <h1 id="title" class="text-3xl text-gray-600 self-center font-medium">My Road to Marathons</h1>
         </div>
     </div>
 
     <!-- CONTENT -->
-    <div class="mx-2 md:mx-8">
-        <div id="charts" class="grid lg:grid-cols-2 gap-4"></div>
+    <div class="mx-8">
+        <div id="charts" class="grid gap-4">
+            <div
+                class="bg-white/75 px-4 py-2 rounded-sm justify-self-center self-center max-w-[95vw] h-[87vh] aspect-video">
+                <div id="chart1-container" class="aspect-video">
+                    <h3 id="chart1-title" class="text-base text-gray-700 font-medium">&nbsp;</h3>
+                    <svg id="chart1"></svg>
+                </div>
+            </div>
+        </div>
 
         <!-- CAPTION -->
         <div id="caption" class="leading-none flex justify-end m-2">
-            <span class="text-sm text-gray-500">Source: </span>
+            <span class="text-sm text-gray-400">Source: Myself :)</span>
         </div>
     </div>
 
-    <script src="../lib/d3_7_9_0.min.js"></script>
+    <script src="./lib/d3_7_9_0.min.js"></script>
     <script type="module" src="./script.js"></script>
 </body>
