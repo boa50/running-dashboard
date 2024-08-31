@@ -1,4 +1,4 @@
-import { colours } from "../../../node_modules/visual-components/index.js"
+import { colours, runRaceChart } from "../../../node_modules/visual-components/index.js"
 
 export const plotChart = async (chartProps) => {
     const data = await prepareData(2024)
@@ -12,41 +12,57 @@ export const plotChart = async (chartProps) => {
 
     const y = d3
         .scaleLinear()
-        .domain([0, d3.max(data, d => d.distance) * 1.05])
+        .domain([0, d3.max(data, d => d.value) * 1.05])
         .range([height, 0])
 
-    const area = d3
-        .area()
-        .x(d => x(d.date))
-        .y0(y(0))
-        .y1(d => y(d.distance))
+    runRaceChart({
+        type: 'area',
+        chart,
+        data,
+        dateField: 'dateKey',
+        x,
+        y,
+        customAttrs: (area) => {
+            area
+                .attr('fill', palette.blue)
+                .attr('opacity', 0.25)
+        }
+    })
 
-    chart
-        .selectAll('.area-path')
-        .data([data])
-        .join('path')
-        .attr('class', 'area-path')
-        .attr('fill', palette.blue)
-        .attr('opacity', 0.25)
-        .attr('d', area)
 
-    const line = d3
-        .line()
-        .x(d => x(d.date))
-        .y(d => y(d.distance))
 
-    chart
-        .selectAll('.line-path')
-        .data([data])
-        .join('path')
-        .attr('class', 'line-path')
-        .attr('fill', 'none')
-        .attr('stroke', palette.blue)
-        .attr('stroke-width', 1)
-        .attr('d', line)
+    // const area = d3
+    //     .area()
+    //     .x(d => x(d.date))
+    //     .y0(y(0))
+    //     .y1(d => y(d.distance))
 
-    console.log(data);
-    console.log(d3.max(data, d => d.distance / 1000))
+    // chart
+    //     .selectAll('.area-path')
+    //     .data([data])
+    //     .join('path')
+    //     .attr('class', 'area-path')
+    //     .attr('fill', palette.blue)
+    //     .attr('opacity', 0.25)
+    //     .attr('d', area)
+
+    // const line = d3
+    //     .line()
+    //     .x(d => x(d.date))
+    //     .y(d => y(d.distance))
+
+    // chart
+    //     .selectAll('.line-path')
+    //     .data([data])
+    //     .join('path')
+    //     .attr('class', 'line-path')
+    //     .attr('fill', 'none')
+    //     .attr('stroke', palette.blue)
+    //     .attr('stroke-width', 1)
+    //     .attr('d', line)
+
+    // console.log(data);
+    // console.log(d3.max(data, d => d.distance / 1000))
 }
 
 async function prepareData(year = 2024) {
@@ -75,8 +91,10 @@ async function prepareData(year = 2024) {
         data.push({
             dateKey,
             date: new Date(currentDate.getTime()),
+            group: '',
             distanceDay,
-            distance
+            distance,
+            value: distance
         })
 
         currentDate.setDate(currentDate.getDate() + 1)
