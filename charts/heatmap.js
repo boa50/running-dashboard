@@ -1,7 +1,5 @@
 import { colours } from '../constant.js'
-import { getTextWidth } from '../components/utils.js'
-import { addLegend } from '../components/colour-legend/script.js'
-import { addHighlightTooltip as addTooltip } from '../components/tooltip/script.js'
+import { getTextWidth, addColourLegend as addLegend, addHighlightTooltip as addTooltip } from '../node_modules/visual-components/index.js'
 
 export const addChart = (chartProps, data) => {
     const { chart, width, height, margin } = chartProps
@@ -77,13 +75,13 @@ export const addChart = (chartProps, data) => {
     const formatKilometers = d => `${d3.format('.2s')(d).replace('.0', '').replace('k', 'km')}`
 
     addLegend({
-        id: 'colour-legend',
+        chart,
         title: 'Distance',
         colourScale: colour,
         axis: colourLegendAxis,
         width: colourLegendWidth,
-        xPos: width - colourLegendWidth - 16,
-        yPos: -margin.top,
+        xPosition: width - colourLegendWidth - 16,
+        yPosition: -margin.top,
         textColour: colours.axis,
         axisTickFormat: formatKilometers
     })
@@ -249,9 +247,9 @@ export const addChart = (chartProps, data) => {
         .attr('opacity', 0)
         .style('fill', 'transparent')
 
-    addTooltip(
-        `${chart.attr('id').split('-')[0]}-container`,
-        d => `
+    addTooltip({
+        id: `${chart.attr('id').split('-')[0]}-container`,
+        htmlText: d => `
         <strong>${d.date.toLocaleString('en-AU', {
             weekday: 'short',
             year: 'numeric',
@@ -263,8 +261,11 @@ export const addChart = (chartProps, data) => {
             <span>${formatKilometers(d.distance)}</span>
         </div>
         `,
-        chart.selectAll('.tooltip-point'),
-        { initial: 0, highlighted: 1, faded: 0 },
-        { width, height }
-    )
+        elements: chart.selectAll('.tooltip-point'),
+        initialOpacity: 0,
+        highlightedOpacity: 1,
+        fadedOpacity: 0,
+        chartWidth: width,
+        chartHeight: height
+    })
 }
