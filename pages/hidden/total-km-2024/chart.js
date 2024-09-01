@@ -2,6 +2,8 @@ import { colours, runRaceChart } from "../../../node_modules/visual-components/i
 
 export const plotChart = async (chartProps) => {
     const data = await prepareData(2024)
+    console.log(d3.max(data, d => d.distance));
+
     const { chart, width, height } = chartProps
     const palette = colours.paletteLightBg
 
