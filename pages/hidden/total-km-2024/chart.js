@@ -42,6 +42,7 @@ export const plotChart = async (chartProps) => {
         dateField: 'dateKey',
         x,
         y,
+        splitsPerStep: 3,
         customAttrs: (area) => {
             area
                 .attr('fill', palette.blue)
