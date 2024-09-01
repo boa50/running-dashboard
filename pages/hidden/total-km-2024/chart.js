@@ -1,4 +1,4 @@
-import { colours, runRaceChart } from "../../../node_modules/visual-components/index.js"
+import { colours, runRaceChart, addAxis } from "../../../node_modules/visual-components/index.js"
 
 export const plotChart = async (chartProps) => {
     const data = await prepareData(2024)
@@ -17,6 +17,24 @@ export const plotChart = async (chartProps) => {
         .domain([0, d3.max(data, d => d.value) * 1.05])
         .range([height, 0])
 
+    addAxis({
+        chart,
+        height,
+        width,
+        colour: palette.axis,
+        x,
+        y,
+        xFormat: d3.utcFormat("%B"),
+        yFormat: d => `${d} Km`
+    })
+
+    chart
+        .selectAll('.x-axis-group .tick text')
+        .attr('transform', 'rotate(45)')
+        .attr('text-anchor', 'start')
+        .attr('dx', '0.1rem')
+        .attr('dy', '0.1rem')
+
     runRaceChart({
         type: 'area',
         chart,
@@ -30,41 +48,6 @@ export const plotChart = async (chartProps) => {
                 .attr('opacity', 0.25)
         }
     })
-
-
-
-    // const area = d3
-    //     .area()
-    //     .x(d => x(d.date))
-    //     .y0(y(0))
-    //     .y1(d => y(d.distance))
-
-    // chart
-    //     .selectAll('.area-path')
-    //     .data([data])
-    //     .join('path')
-    //     .attr('class', 'area-path')
-    //     .attr('fill', palette.blue)
-    //     .attr('opacity', 0.25)
-    //     .attr('d', area)
-
-    // const line = d3
-    //     .line()
-    //     .x(d => x(d.date))
-    //     .y(d => y(d.distance))
-
-    // chart
-    //     .selectAll('.line-path')
-    //     .data([data])
-    //     .join('path')
-    //     .attr('class', 'line-path')
-    //     .attr('fill', 'none')
-    //     .attr('stroke', palette.blue)
-    //     .attr('stroke-width', 1)
-    //     .attr('d', line)
-
-    // console.log(data);
-    // console.log(d3.max(data, d => d.distance / 1000))
 }
 
 async function prepareData(year = 2024) {
@@ -87,7 +70,7 @@ async function prepareData(year = 2024) {
         const dateKey = currentDate.toISOString().substring(0, 10)
 
         const distanceData = distances.filter(d => d.dateKey === dateKey)
-        const distanceDay = distanceData.length > 0 ? distanceData[0].distance : 0
+        const distanceDay = (distanceData.length > 0 ? distanceData[0].distance : 0) / 1000
         const distance = data.length > 0 ? data[data.length - 1].distance + distanceDay : distanceDay
 
         data.push({
