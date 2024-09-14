@@ -1,4 +1,4 @@
-import { colours, runRaceChart, addAxis, updateXaxis, updateYaxis } from "../../../node_modules/visual-components/index.js"
+import { colours, runRaceChart, addAxis, updateXaxis, updateYaxis, prepareRaceData, createAreaChart, updateAreaChart } from "../../../node_modules/visual-components/index.js"
 
 const xFormat = d3.utcFormat("%B")
 const yFormat = d => `${d} Km`
@@ -29,7 +29,8 @@ export const plotChart = async (chartProps) => {
         xFormat,
         yFormat,
         hideXdomain: true,
-        hideYdomain: true
+        hideYdomain: true,
+        xTicksRotate: true
     })
 
     const xTicks = [...Array(12).keys()].map(month => new Date(2024, month, 1))
@@ -45,7 +46,8 @@ export const plotChart = async (chartProps) => {
             format: xFormat,
             hideDomain: true,
             transitionFix: false,
-            tickValues: xTicks
+            tickValues: xTicks,
+            rotate: true
         })
 
         updateYaxis({
@@ -55,29 +57,21 @@ export const plotChart = async (chartProps) => {
             hideDomain: true,
             transitionFix: false,
         })
-
-        chart
-            .selectAll('.x-axis-group .tick text')
-            .attr('transform', 'rotate(45)')
-            .attr('text-anchor', 'start')
-            .attr('dx', '0.1rem')
-            .attr('dy', '0.1rem')
     }
+
+    const updateChartProps = createAreaChart(chart, x, y, area => {
+        area
+            .attr('fill', palette.blue)
+            .attr('opacity', 0.25)
+    })
 
     runRaceChart({
         type: 'area',
         chart,
-        data,
-        dateField: 'dateKey',
+        raceData: prepareRaceData({ data, dateField: 'dateKey', k: 3 }),
+        updateChart: (currentData) => updateAreaChart(updateChartProps, currentData, updateAxis, x, y),
         x,
         y,
-        splitsPerStep: 3,
-        customAttrs: area => {
-            area
-                .attr('fill', palette.blue)
-                .attr('opacity', 0.25)
-        },
-        updateAxis
     })
 }
 
