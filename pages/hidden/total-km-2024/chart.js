@@ -1,8 +1,10 @@
-import { colours, runRaceChart, addAxis } from "../../../node_modules/visual-components/index.js"
+import { colours, runRaceChart, addAxis, updateXaxis, updateYaxis } from "../../../node_modules/visual-components/index.js"
+
+const xFormat = d3.utcFormat("%B")
+const yFormat = d => `${d} Km`
 
 export const plotChart = async (chartProps) => {
     const data = await prepareData(2024)
-    console.log(d3.max(data, d => d.distance));
 
     const { chart, width, height } = chartProps
     const palette = colours.paletteLightBg
@@ -24,16 +26,43 @@ export const plotChart = async (chartProps) => {
         colour: palette.axis,
         x,
         y,
-        xFormat: d3.utcFormat("%B"),
-        yFormat: d => `${d} Km`
+        xFormat,
+        yFormat,
+        hideXdomain: true,
+        hideYdomain: true
     })
 
-    chart
-        .selectAll('.x-axis-group .tick text')
-        .attr('transform', 'rotate(45)')
-        .attr('text-anchor', 'start')
-        .attr('dx', '0.1rem')
-        .attr('dy', '0.1rem')
+    const xTicks = [...Array(12).keys()].map(month => new Date(2024, month, 1))
+
+
+    const updateAxis = stackedData => {
+        const maxValue = d3.max(d3.union(...stackedData.map(d => d.map(v => d3.max(v, v2 => Math.abs(v2))))), d => d)
+        y.domain([0, maxValue].map(d => d * 1.05))
+
+        updateXaxis({
+            chart,
+            x,
+            format: xFormat,
+            hideDomain: true,
+            transitionFix: false,
+            tickValues: xTicks
+        })
+
+        updateYaxis({
+            chart,
+            y,
+            format: yFormat,
+            hideDomain: true,
+            transitionFix: false,
+        })
+
+        chart
+            .selectAll('.x-axis-group .tick text')
+            .attr('transform', 'rotate(45)')
+            .attr('text-anchor', 'start')
+            .attr('dx', '0.1rem')
+            .attr('dy', '0.1rem')
+    }
 
     runRaceChart({
         type: 'area',
@@ -43,11 +72,12 @@ export const plotChart = async (chartProps) => {
         x,
         y,
         splitsPerStep: 3,
-        customAttrs: (area) => {
+        customAttrs: area => {
             area
                 .attr('fill', palette.blue)
                 .attr('opacity', 0.25)
-        }
+        },
+        updateAxis
     })
 }
 
