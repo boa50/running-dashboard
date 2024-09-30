@@ -1,5 +1,5 @@
 import { colours } from "./constant.js"
-import { getChart } from "./components/utils.js"
+import { getChart, getChartDimensions } from "./node_modules/visual-components/index.js"
 import { addChart as addHeatmap } from "./charts/heatmap.js"
 
 const getData = () =>
@@ -23,17 +23,16 @@ getData().then(data => {
         <span class="font-extrabold" style="color: ${colours.annotationPoint};">${totalKm}km</span>`)
 
     addHeatmap(
-        getChart(
-            'chart1',
-            document.getElementById('chart1-container').offsetWidth,
-            document.getElementById('chart1-container').offsetHeight,
-            {
+        getChart({
+            id: 'chart1',
+            chartDimensions: getChartDimensions({ chartId: 'chart1', xl2: { width: 1500 } }),
+            margin: {
                 left: 148,
                 right: 384,
                 top: 72,
                 bottom: 32
             }
-        ),
+        }),
         data
     )
 })
