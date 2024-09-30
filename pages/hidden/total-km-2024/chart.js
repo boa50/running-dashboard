@@ -65,6 +65,52 @@ export const plotChart = async (chartProps) => {
             .attr('opacity', 0.25)
     })
 
+    console.log(data.filter(d => d.distance >= 1000)[0]);
+
+    const breakpoints = {
+        '200': data.filter(d => d.value >= 200)[0],
+        '1000': data.filter(d => d.value >= 1000)[0],
+        '2000': data.filter(d => d.value >= 2000)[0],
+        '3000': data.filter(d => d.value >= 2200)[0],
+        'last': data[data.length - 1]
+    }
+
+    const addCustomPoints = ({ data, x, y }) => {
+        const updatePointPosition = (id, cx, cy) => {
+            chart
+                .select(`#${id}`)
+                .attr('cx', cx)
+                .attr('cy', cy)
+        }
+
+        const addUpdateBreakpoint = point => {
+            if (d3.max(data, d => d.value) >= point) {
+                const id = `breakpoint-${point}`
+                const cx = x(breakpoints[point].date)
+                const cy = y(breakpoints[point].value)
+
+                if (chart.select(`#${id}`).empty()) {
+                    chart
+                        .append('circle')
+                        .attr('id', id)
+                        .attr('cx', cx)
+                        .attr('cy', cy)
+                        .attr('r', 3)
+                        .attr('fill', 'red')
+
+                } else {
+                    updatePointPosition(id, cx, cy)
+                }
+            }
+        }
+
+        addUpdateBreakpoint(200)
+        addUpdateBreakpoint(1000)
+        addUpdateBreakpoint(2000)
+        addUpdateBreakpoint(2000)
+
+    }
+
     runRaceChart({
         type: 'area',
         chart,
@@ -72,6 +118,7 @@ export const plotChart = async (chartProps) => {
         updateChart: (currentData) => updateAreaChart(updateChartProps, currentData, updateAxis, x, y),
         x,
         y,
+        addCustom: (data, x, y) => addCustomPoints({ chart, data, x, y })
     })
 }
 

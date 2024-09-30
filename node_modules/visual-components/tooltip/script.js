@@ -125,10 +125,15 @@ export const addHighlightTooltip = ({
     highlightedOpacity = 1,
     fadedOpacity = 0.25,
     chartWidth = 500,
-    chartHeight = 500
+    chartHeight = 500,
+    fadeHighlightElements = undefined,
+    highlightFunction = ({ chart, element, highlightedOpacity }) => element.style('opacity', highlightedOpacity)
 }) => {
     if ((id === undefined) && (chart !== undefined))
         id = `${chart.attr('id').split('-')[0]}-container`
+
+    if (fadeHighlightElements === undefined)
+        fadeHighlightElements = elements
 
     const { mouseover, mousemove, mouseleave } = addTooltip(
         id,
@@ -137,12 +142,12 @@ export const addHighlightTooltip = ({
     )
 
     const customMouseOver = function (event, d) {
-        elements.style('opacity', fadedOpacity)
-        d3.select(this).style('opacity', highlightedOpacity)
+        fadeHighlightElements.style('opacity', fadedOpacity)
+        highlightFunction({ chart, element: d3.select(this), highlightedOpacity })
         mouseover(event, d)
     }
     const customMouseLeave = function (event, d) {
-        elements.style('opacity', initialOpacity)
+        fadeHighlightElements.style('opacity', initialOpacity)
         mouseleave(event, d)
     }
 
