@@ -1,4 +1,13 @@
-import { colours, runRaceChart, addAxis, updateXaxis, updateYaxis, prepareRaceData, createAreaChart, updateAreaChart } from "../../../node_modules/visual-components/index.js"
+import {
+    colours,
+    runRaceChart,
+    addAxis,
+    updateXaxis,
+    updateYaxis,
+    prepareRaceData,
+    createAreaChart,
+    updateAreaChart
+} from "../../../node_modules/visual-components/index.js"
 
 const xFormat = d3.utcFormat("%B")
 const yFormat = d => `${d} Km`
@@ -58,10 +67,14 @@ export const plotChart = async (chartProps) => {
         })
     }
 
-    const updateChartProps = createAreaChart(chart, x, y, area => {
-        area
-            .attr('fill', palette.blue)
-            .attr('opacity', 0.25)
+    const updateChartProps = createAreaChart({
+        chart, x, y,
+        isAddLine: true,
+        customAttrs: area => {
+            area
+                .attr('fill', palette.blue)
+                .attr('opacity', 0.25)
+        }
     })
 
     const breakpoints = {
@@ -124,7 +137,11 @@ export const plotChart = async (chartProps) => {
         type: 'area',
         chart,
         raceData: prepareRaceData({ data, dateField: 'dateKey', k: 3 }),
-        updateChart: (currentData) => updateAreaChart(updateChartProps, currentData, updateAxis, x, y),
+        updateChart: (currentData) => updateAreaChart({
+            updateAxis, x, y,
+            updateArea: updateChartProps,
+            stackedData: currentData
+        }),
         x,
         y,
         addCustom: (data, x, y) => addCustomPoints({ chart, data, x, y })

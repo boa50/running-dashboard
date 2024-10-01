@@ -152,7 +152,7 @@ export function plot(): {
 export function runRaceChart({ }: {
     type: 'line' | 'area',
     chart: Element,
-    raceData: { keyframes: Array<Object>, prev: Map, next: Map, groups: Set<String> },
+    raceData: { keyframes: Array<Object>, prev: Map<Date, Object>, next: Map<Date, Object>, groups: Set<String> },
     x: Function,
     y: Function,
     updateChart: Function,
@@ -166,22 +166,23 @@ export function prepareRaceData({ }: {
     isRankedData?: boolean,
     k?: number,
     n?: number
-}): { keyframes: Array<Object>, prev: Map, next: Map, groups: Set<String> }
+}): { keyframes: Array<Object>, prev: Map<Date, Object>, next: Map<Date, Object>, groups: Set<String> }
 
-export function createAreaChart(
+export function createAreaChart({ }: {
     chart: Element,
     x: Function,
     y: Function,
-    areaAttrs?: Function
-): Function
+    customAttrs?: Function,
+    isAddLine?: boolean
+}): Function
 
-export function updateAreaChart(
+export function updateAreaChart({ }: {
     updateArea: Function,
     stackedData: Array<Object>,
     updateAxis: Function,
     x: Function,
     y: Function
-): null
+}): null
 
 
 /*

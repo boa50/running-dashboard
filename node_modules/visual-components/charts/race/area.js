@@ -1,24 +1,54 @@
-export const createAreaChart = (chart, x, y, customAttrs) => {
-    let area = chart
-        .selectAll('.data-point')
-
+export const createAreaChart = ({
+    chart,
+    x,
+    y,
+    customAttrs = area => { area.attr('fill', 'black') },
+    isAddLine = false
+}) => {
     const areaGenerator = d3
         .area()
         .x(d => x(d.data[0]))
         .y0(d => y(d[0]))
         .y1(d => y(d[1]))
 
-    return stackedData => area = area
-        .data(stackedData)
-        .join('path')
-        .attr('class', 'data-point')
-        .call(area => customAttrs(area))
-        .call(
-            area => area.attr('d', areaGenerator)
+    const lineGenerator = d3
+        .line()
+        .x(d => x(d.data[0]))
+        .y(d => y(d[1]))
+
+    return stackedData => chart
+        .call(area =>
+            area
+                .selectAll('.data-point')
+                .data(stackedData)
+                .join('path')
+                .attr('class', 'data-point')
+                .call(area => customAttrs(area))
+                .call(
+                    area => area.attr('d', areaGenerator)
+                )
         )
+        .call(area => {
+            if (isAddLine) {
+                let firstIdx = stackedData[0].findIndex(d => d[1] > 0)
+                firstIdx = firstIdx > 0 ? firstIdx - 1 : firstIdx
+
+                if (firstIdx >= 0) {
+                    return area
+                        .selectAll('.data-line')
+                        .data([stackedData[0].slice(firstIdx)])
+                        .join('path')
+                        .attr('class', 'data-line')
+                        .attr('fill', 'none')
+                        .attr('stroke', area.select('.data-point').attr('fill'))
+                        .attr('stroke-width', 1.5)
+                        .attr('d', lineGenerator)
+                }
+            }
+        })
 }
 
-export const updateAreaChart = (updateArea, stackedData, updateAxis, x, y) => {
+export const updateAreaChart = ({ updateArea, stackedData, updateAxis, x, y }) => {
     updateArea(stackedData)
 
     const dates = new Set()
