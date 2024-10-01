@@ -35,7 +35,6 @@ export const plotChart = async (chartProps) => {
 
     const xTicks = [...Array(12).keys()].map(month => new Date(2024, month, 1))
 
-
     const updateAxis = stackedData => {
         const maxValue = d3.max(d3.union(...stackedData.map(d => d.map(v => d3.max(v, v2 => Math.abs(v2))))), d => d)
         y.domain([0, maxValue].map(d => d * 1.05))
@@ -65,8 +64,6 @@ export const plotChart = async (chartProps) => {
             .attr('opacity', 0.25)
     })
 
-    console.log(data.filter(d => d.distance >= 1000)[0]);
-
     const breakpoints = {
         '200': data.filter(d => d.value >= 200)[0],
         '1000': data.filter(d => d.value >= 1000)[0],
@@ -79,8 +76,7 @@ export const plotChart = async (chartProps) => {
         const updatePointPosition = (id, cx, cy) => {
             chart
                 .select(`#${id}`)
-                .attr('cx', cx)
-                .attr('cy', cy)
+                .attr('transform', `translate(${[cx, cy]})`)
         }
 
         const addUpdateBreakpoint = point => {
@@ -91,13 +87,27 @@ export const plotChart = async (chartProps) => {
 
                 if (chart.select(`#${id}`).empty()) {
                     chart
-                        .append('circle')
+                        .append('g')
                         .attr('id', id)
-                        .attr('cx', cx)
-                        .attr('cy', cy)
-                        .attr('r', 3)
-                        .attr('fill', 'red')
-
+                        .attr('transform', `translate(${[cx, cy]})`)
+                        .call(g =>
+                            g
+                                .append('circle')
+                                .attr('r', 3)
+                                .attr('fill', 'white')
+                                .attr('stroke', palette.blue)
+                                .attr('stroke-width', 2)
+                        )
+                        .call(g =>
+                            g
+                                .append('text')
+                                .attr('x', -8)
+                                .attr('dominant-baseline', 'middle')
+                                .attr('text-anchor', 'end')
+                                .attr('fill', palette.blue)
+                                .attr('font-size', '0.75rem')
+                                .text(yFormat(point))
+                        )
                 } else {
                     updatePointPosition(id, cx, cy)
                 }
@@ -107,8 +117,7 @@ export const plotChart = async (chartProps) => {
         addUpdateBreakpoint(200)
         addUpdateBreakpoint(1000)
         addUpdateBreakpoint(2000)
-        addUpdateBreakpoint(2000)
-
+        addUpdateBreakpoint(3000)
     }
 
     runRaceChart({
