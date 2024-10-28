@@ -66,28 +66,10 @@ export const plotChart = async (chartProps) => {
         }
     })
 
-    const slowerPoint = 1000
-    const breakpoints = [slowerPoint - 200, slowerPoint - 100, slowerPoint, slowerPoint + 100, slowerPoint + 200]
-
-    const data1 = data.filter(d => d.value < breakpoints[0])
-    const data2 = data.filter(d => (d.value >= breakpoints[0]) && ((d.value < breakpoints[1])))
-    const data3 = data.filter(d => (d.value >= breakpoints[1]) && ((d.value < breakpoints[2])))
-    const data4 = data.filter(d => (d.value >= breakpoints[2]) && ((d.value < breakpoints[3])))
-    const data5 = data.filter(d => (d.value >= breakpoints[3]) && ((d.value < breakpoints[4])))
-    const data6 = data.filter(d => d.value >= breakpoints[4])
-
-    const raceData = prepareRaceData({ data: data1, dateField: 'dateKey', k: 3 })
-    raceData.keyframes.push(...prepareRaceData({ data: data2, dateField: 'dateKey', k: 6 }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data3, dateField: 'dateKey', k: 10 }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data4, dateField: 'dateKey', k: 10 }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data5, dateField: 'dateKey', k: 6 }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data6, dateField: 'dateKey', k: 3 }).keyframes)
-
-
     runRaceChart({
         type: 'area',
         chart,
-        raceData,
+        raceData: buildRaceData({ data, slowestPoint: 1000 }),
         updateChart: (currentData) => updateAreaChart({
             updateAxis, x, y,
             updateArea: updateChartProps,
@@ -135,4 +117,24 @@ async function prepareData(year = 2024) {
     }
 
     return data
+}
+
+function buildRaceData({ data, slowestPoint }) {
+    const breakpoints = [slowestPoint - 200, slowestPoint - 100, slowestPoint, slowestPoint + 100, slowestPoint + 200]
+
+    const data1 = data.filter(d => d.value < breakpoints[0])
+    const data2 = data.filter(d => (d.value >= breakpoints[0]) && ((d.value < breakpoints[1])))
+    const data3 = data.filter(d => (d.value >= breakpoints[1]) && ((d.value < breakpoints[2])))
+    const data4 = data.filter(d => (d.value >= breakpoints[2]) && ((d.value < breakpoints[3])))
+    const data5 = data.filter(d => (d.value >= breakpoints[3]) && ((d.value < breakpoints[4])))
+    const data6 = data.filter(d => d.value >= breakpoints[4])
+
+    const raceData = prepareRaceData({ data: data1, dateField: 'dateKey', k: 3 })
+    raceData.keyframes.push(...prepareRaceData({ data: data2, dateField: 'dateKey', k: 6 }).keyframes)
+    raceData.keyframes.push(...prepareRaceData({ data: data3, dateField: 'dateKey', k: 10 }).keyframes)
+    raceData.keyframes.push(...prepareRaceData({ data: data4, dateField: 'dateKey', k: 10 }).keyframes)
+    raceData.keyframes.push(...prepareRaceData({ data: data5, dateField: 'dateKey', k: 6 }).keyframes)
+    raceData.keyframes.push(...prepareRaceData({ data: data6, dateField: 'dateKey', k: 3 }).keyframes)
+
+    return raceData
 }
