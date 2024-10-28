@@ -3,7 +3,6 @@ import {
     runRaceChart,
     addAxis,
     updateXaxis,
-    updateYaxis,
     prepareRaceData,
     createAreaChart,
     updateAreaChart
@@ -34,11 +33,8 @@ export const plotChart = async (chartProps) => {
         width,
         colour: palette.axis,
         x,
-        y,
         xFormat,
-        yFormat,
         hideXdomain: true,
-        hideYdomain: true,
         xTicksRotate: true
     })
 
@@ -56,14 +52,6 @@ export const plotChart = async (chartProps) => {
             transitionFix: false,
             tickValues: xTicks,
             rotate: true
-        })
-
-        updateYaxis({
-            chart,
-            y,
-            format: yFormat,
-            hideDomain: true,
-            transitionFix: false,
         })
     }
 
@@ -133,10 +121,12 @@ export const plotChart = async (chartProps) => {
         addUpdateBreakpoint(3000)
     }
 
+    const raceData = prepareRaceData({ data, dateField: 'dateKey', k: 3 })
+
     runRaceChart({
         type: 'area',
         chart,
-        raceData: prepareRaceData({ data, dateField: 'dateKey', k: 3 }),
+        raceData,
         updateChart: (currentData) => updateAreaChart({
             updateAxis, x, y,
             updateArea: updateChartProps,
