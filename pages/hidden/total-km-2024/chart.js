@@ -121,6 +121,59 @@ export const plotChart = async (chartProps) => {
         addUpdateBreakpoint(3000)
     }
 
+    const addCustomElements = ({ data, x, y }) => {
+        addCustomPoints({ data, x, y })
+
+        const updatePointPosition = (id, cx, cy) => {
+            chart
+                .select(`#${id}`)
+                .attr('transform', `translate(${[cx, cy]})`)
+        }
+
+        const updatePointText = (id, value) => {
+            chart
+                .select(`#${id}`)
+                .select('text')
+                .text(yFormat(value))
+        }
+
+        const addUpdateBreakpoint = point => {
+            const id = `breakpoint-${point}`
+            const cx = x(d3.max(data, d => d.date))
+            const maxValue = d3.max(data, d => d.value)
+            const cy = y(maxValue)
+
+            if (chart.select(`#${id}`).empty()) {
+                chart
+                    .append('g')
+                    .attr('id', id)
+                    .attr('transform', `translate(${[cx, cy]})`)
+                    .call(g =>
+                        g
+                            .append('circle')
+                            .attr('r', 3)
+                            .attr('fill', 'white')
+                            .attr('stroke', palette.blue)
+                            .attr('stroke-width', 2)
+                    )
+                    .call(g =>
+                        g
+                            .append('text')
+                            .attr('x', -8)
+                            .attr('dominant-baseline', 'middle')
+                            .attr('text-anchor', 'end')
+                            .attr('fill', palette.blue)
+                            .attr('font-size', '0.75rem')
+                    )
+            } else {
+                updatePointPosition(id, cx, cy)
+                updatePointText(id, maxValue)
+            }
+        }
+
+        addUpdateBreakpoint('last')
+    }
+
     const raceData = prepareRaceData({ data, dateField: 'dateKey', k: 3 })
 
     runRaceChart({
@@ -134,7 +187,7 @@ export const plotChart = async (chartProps) => {
         }),
         x,
         y,
-        addCustom: (data, x, y) => addCustomPoints({ chart, data, x, y })
+        addCustom: (data, x, y) => addCustomElements({ chart, data, x, y })
     })
 }
 
