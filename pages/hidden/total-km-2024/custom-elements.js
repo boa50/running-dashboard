@@ -65,6 +65,48 @@ const addUpdateBreakpoint = (data, chart, x, y, breakpoints, point) => {
     }
 }
 
+const addUpdateCustomDateLine = (chart, x, y, breakpoints, height) => {
+    const lineTime = breakpoints[1000]
+
+    if (lineTime === undefined) return
+
+    const lineId = 'custom-line'
+    const lineTextId = 'custom-line-text'
+
+    if (chart.select(`#${lineId}`).empty()) {
+        chart
+            .append('line')
+            .attr('id', lineId)
+            .attr('stroke', palette.axis)
+            .attr('stroke-width', 2)
+            .attr('stroke-dasharray', '4')
+    } else {
+        chart
+            .select(`#${lineId}`)
+            .attr('x1', x(lineTime.date))
+            .attr('x2', x(lineTime.date))
+            .attr('y1', y(0))
+            .attr('y2', y(lineTime.value))
+    }
+
+    if (chart.select(`#${lineTextId}`).empty()) {
+        chart
+            .append('text')
+            .attr('id', lineTextId)
+            .attr('text-anchor', 'middle')
+            .attr('fill', palette.axis)
+            .attr('font-size', '0.75rem')
+            .text(lineTime.date.toLocaleDateString('en-AU'))
+    } else {
+        const xPosition = x(lineTime.date) + 8
+        const yPosition = y(lineTime.value) + ((height - y(lineTime.value)) / 2)
+
+        chart
+            .select(`#${lineTextId}`)
+            .attr('transform', `translate(${[xPosition, yPosition]}) rotate(90)`)
+    }
+}
+
 export const addCustomPoints = ({ data, chart, x, y, height }) => {
     const breakpoints = {
         '1000': data.filter(d => d.value >= 1000)[0],
@@ -78,27 +120,5 @@ export const addCustomPoints = ({ data, chart, x, y, height }) => {
 
     addUpdateBreakpoint(data, chart, x, y)
 
-    const lineTime = breakpoints[1000]
-
-    if (chart.select(`#custom-line`).empty() && (lineTime !== undefined)) {
-        chart
-            .append('line')
-            .attr('id', 'custom-line')
-            .attr('x1', x(lineTime.date))
-            .attr('x2', x(lineTime.date))
-            .attr('y1', y(0))
-            .attr('y2', y(lineTime.value))
-            .attr('stroke', palette.axis)
-            .attr('stroke-width', 2)
-            .attr('stroke-dasharray', '4')
-    }
-
-    if (!chart.select(`#custom-line`).empty()) {
-        chart
-            .select(`#custom-line`)
-            .attr('x1', x(lineTime.date))
-            .attr('x2', x(lineTime.date))
-            .attr('y1', y(0))
-            .attr('y2', y(lineTime.value))
-    }
+    addUpdateCustomDateLine(chart, x, y, breakpoints, height)
 }
