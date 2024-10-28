@@ -95,7 +95,7 @@ export const plotChart = async (chartProps) => {
         }),
         x,
         y,
-        addCustom: (data, x, y) => addCustomPoints({ chart, data, x, y })
+        addCustom: (data, x, y) => addCustomPoints({ chart, data, x, y, height })
     })
 }
 

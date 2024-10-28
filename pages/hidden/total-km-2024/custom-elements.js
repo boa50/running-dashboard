@@ -65,7 +65,7 @@ const addUpdateBreakpoint = (data, chart, x, y, breakpoints, point) => {
     }
 }
 
-export const addCustomPoints = ({ data, chart, x, y }) => {
+export const addCustomPoints = ({ data, chart, x, y, height }) => {
     const breakpoints = {
         '1000': data.filter(d => d.value >= 1000)[0],
         '2000': data.filter(d => d.value >= 2000)[0],
@@ -77,4 +77,28 @@ export const addCustomPoints = ({ data, chart, x, y }) => {
     })
 
     addUpdateBreakpoint(data, chart, x, y)
+
+    const lineTime = breakpoints[1000]
+
+    if (chart.select(`#custom-line`).empty() && (lineTime !== undefined)) {
+        chart
+            .append('line')
+            .attr('id', 'custom-line')
+            .attr('x1', x(lineTime.date))
+            .attr('x2', x(lineTime.date))
+            .attr('y1', y(0))
+            .attr('y2', y(lineTime.value))
+            .attr('stroke', palette.axis)
+            .attr('stroke-width', 2)
+            .attr('stroke-dasharray', '4')
+    }
+
+    if (!chart.select(`#custom-line`).empty()) {
+        chart
+            .select(`#custom-line`)
+            .attr('x1', x(lineTime.date))
+            .attr('x2', x(lineTime.date))
+            .attr('y1', y(0))
+            .attr('y2', y(lineTime.value))
+    }
 }
