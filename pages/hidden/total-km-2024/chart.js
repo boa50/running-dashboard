@@ -8,8 +8,9 @@ import {
     updateAreaChart
 } from "../../../node_modules/visual-components/index.js"
 
+import { addCustomPoints } from "./custom-elements.js"
+
 const xFormat = d3.utcFormat("%B")
-const yFormat = d => `${d} Km`
 
 export const plotChart = async (chartProps) => {
     const data = await prepareData(2024)
@@ -65,116 +66,7 @@ export const plotChart = async (chartProps) => {
         }
     })
 
-    const breakpoints = {
-        '200': data.filter(d => d.value >= 200)[0],
-        '1000': data.filter(d => d.value >= 1000)[0],
-        '2000': data.filter(d => d.value >= 2000)[0],
-        '3000': data.filter(d => d.value >= 2200)[0],
-        'last': data[data.length - 1]
-    }
-
-    const addCustomPoints = ({ data, x, y }) => {
-        const updatePointPosition = (id, cx, cy) => {
-            chart
-                .select(`#${id}`)
-                .attr('transform', `translate(${[cx, cy]})`)
-        }
-
-        const addUpdateBreakpoint = point => {
-            if (d3.max(data, d => d.value) >= point) {
-                const id = `breakpoint-${point}`
-                const cx = x(breakpoints[point].date)
-                const cy = y(breakpoints[point].value)
-
-                if (chart.select(`#${id}`).empty()) {
-                    chart
-                        .append('g')
-                        .attr('id', id)
-                        .attr('transform', `translate(${[cx, cy]})`)
-                        .call(g =>
-                            g
-                                .append('circle')
-                                .attr('r', 3)
-                                .attr('fill', 'white')
-                                .attr('stroke', palette.blue)
-                                .attr('stroke-width', 2)
-                        )
-                        .call(g =>
-                            g
-                                .append('text')
-                                .attr('x', -8)
-                                .attr('dominant-baseline', 'middle')
-                                .attr('text-anchor', 'end')
-                                .attr('fill', palette.blue)
-                                .attr('font-size', '0.75rem')
-                                .text(yFormat(point))
-                        )
-                } else {
-                    updatePointPosition(id, cx, cy)
-                }
-            }
-        }
-
-        addUpdateBreakpoint(200)
-        addUpdateBreakpoint(1000)
-        addUpdateBreakpoint(2000)
-        addUpdateBreakpoint(3000)
-    }
-
-    const addCustomElements = ({ data, x, y }) => {
-        addCustomPoints({ data, x, y })
-
-        const updatePointPosition = (id, cx, cy) => {
-            chart
-                .select(`#${id}`)
-                .attr('transform', `translate(${[cx, cy]})`)
-        }
-
-        const updatePointText = (id, value) => {
-            chart
-                .select(`#${id}`)
-                .select('text')
-                .text(yFormat(value))
-        }
-
-        const addUpdateBreakpoint = point => {
-            const id = `breakpoint-${point}`
-            const cx = x(d3.max(data, d => d.date))
-            const maxValue = d3.max(data, d => d.value)
-            const cy = y(maxValue)
-
-            if (chart.select(`#${id}`).empty()) {
-                chart
-                    .append('g')
-                    .attr('id', id)
-                    .attr('transform', `translate(${[cx, cy]})`)
-                    .call(g =>
-                        g
-                            .append('circle')
-                            .attr('r', 3)
-                            .attr('fill', 'white')
-                            .attr('stroke', palette.blue)
-                            .attr('stroke-width', 2)
-                    )
-                    .call(g =>
-                        g
-                            .append('text')
-                            .attr('x', -8)
-                            .attr('dominant-baseline', 'middle')
-                            .attr('text-anchor', 'end')
-                            .attr('fill', palette.blue)
-                            .attr('font-size', '0.75rem')
-                    )
-            } else {
-                updatePointPosition(id, cx, cy)
-                updatePointText(id, maxValue)
-            }
-        }
-
-        addUpdateBreakpoint('last')
-    }
-
-    const raceData = prepareRaceData({ data, dateField: 'dateKey', k: 3 })
+    const raceData = prepareRaceData({ data, dateField: 'dateKey', k: 1 })
 
     runRaceChart({
         type: 'area',
@@ -187,7 +79,7 @@ export const plotChart = async (chartProps) => {
         }),
         x,
         y,
-        addCustom: (data, x, y) => addCustomElements({ chart, data, x, y })
+        addCustom: (data, x, y) => addCustomPoints({ chart, data, x, y })
     })
 }
 
