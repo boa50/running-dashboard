@@ -16,16 +16,16 @@ const updatePointText = (chart, id, value) => {
         .text(yFormat(value))
 }
 
-const addUpdateBreakpoint = (data, chart, x, y, breakpoints, point) => {
+const addUpdateBreakpoint = (data, chart, x, y, breakpoints, key) => {
     const maxValue = d3.max(data, d => d.value)
-
-    if ((point === undefined) || (maxValue >= point)) {
+    
+    if ((key === undefined) || (breakpoints[key].filteredData === undefined) || (maxValue >= breakpoints[key].filteredData.value)) {
         let id, cx, cy
 
-        if (point !== undefined) {
-            id = `breakpoint-${point}`
-            cx = x(breakpoints[point].date)
-            cy = y(breakpoints[point].value)
+        if (key !== undefined  && breakpoints[key].filteredData !== undefined) {
+            id = `breakpoint-${key}`
+            cx = x(breakpoints[key].filteredData.date)
+            cy = y(breakpoints[key].filteredData.value)
         } else {
             id = `breakpoint-current`
             cx = x(d3.max(data, d => d.date))
@@ -38,12 +38,14 @@ const addUpdateBreakpoint = (data, chart, x, y, breakpoints, point) => {
                 .attr('id', id)
                 .attr('transform', `translate(${[cx, cy]})`)
                 .call(g =>
+                    id !== 'breakpoint-current' ? 
                     g
                         .append('circle')
                         .attr('r', 3)
                         .attr('fill', 'white')
-                        .attr('stroke', palette.blue)
+                        .attr('stroke', palette.bluishGreen)
                         .attr('stroke-width', 2)
+                        :null
                 )
                 .call(g =>
                     g
@@ -51,14 +53,14 @@ const addUpdateBreakpoint = (data, chart, x, y, breakpoints, point) => {
                         .attr('x', -8)
                         .attr('dominant-baseline', 'middle')
                         .attr('text-anchor', 'end')
-                        .attr('fill', palette.blue)
+                        .attr('fill', id !== 'breakpoint-current' ? palette.bluishGreen : palette.blue)
                         .attr('font-size', '0.75rem')
-                        .text(point !== undefined ? yFormat(point) : null)
+                        .text(key !== undefined ? breakpoints[key].label : null)
                 )
         } else {
             updatePointPosition(chart, id, cx, cy)
 
-            if (point === undefined) {
+            if (key === undefined) {
                 updatePointText(chart, id, maxValue)
             }
         }
@@ -107,18 +109,75 @@ const addUpdateCustomDateLine = (chart, x, y, breakpoints, height) => {
     }
 }
 
+const addUpdateKmLineBreakpoint = (data, chart, x, y, breakpoints, key) => {
+    const maxValue = d3.max(data, d => d.value)
+    
+    if ((key === undefined) || (breakpoints[key].filteredData === undefined) || (maxValue >= breakpoints[key].filteredData.value)) {
+        let lineId, lineTextId, xPosition, yPosition
+
+        if (key !== undefined  && breakpoints[key].filteredData !== undefined) {
+            lineId = 'custom-line' + key
+            lineTextId = 'custom-line-text' + key
+            xPosition = x(breakpoints[key].filteredData.date)
+            yPosition = y(breakpoints[key].filteredData.value)
+
+            if (chart.select(`#${lineId}`).empty()) {
+                chart
+                    .append('line')
+                    .attr('id', lineId)
+                    .attr('stroke', d3.hsl(palette.axis).brighter(2.5))
+                    .attr('stroke-width', 0.5)
+            } else {
+                chart
+                    .select(`#${lineId}`)
+                    .attr('x1', 0)
+                    .attr('x2', xPosition)
+                    .attr('y1', yPosition)
+                    .attr('y2', yPosition)
+            }
+
+            if (chart.select(`#${lineTextId}`).empty()) {
+                chart
+                    .append('text')
+                    .attr('id', lineTextId)
+                    .attr('text-anchor', 'start')
+                    .attr('fill', d3.hsl(palette.axis).brighter(2.5))
+                    .attr('font-size', '0.75rem')
+                    .text(breakpoints[key].label)
+            } else {
+                const xTextPosition = 0
+                const yTextPosition = yPosition - 2
+        
+                chart
+                    .select(`#${lineTextId}`)
+                    .attr('transform', `translate(${[xTextPosition, yTextPosition]})`)
+            }
+        }
+    }
+}
+
 export const addCustomPoints = ({ data, chart, x, y, height }) => {
-    const breakpoints = {
-        '1000': data.filter(d => d.value >= 1000)[0],
-        '2000': data.filter(d => d.value >= 2000)[0],
-        '3000': data.filter(d => d.value >= 3000)[0]
+    const eventBreakpoints = {
+        'tokyo': {label: 'Tokyo Marathon', filteredData: data.filter(d => d.date >= new Date(2024, 2, 3))[0]},
+        'bogota': {label: 'Bogota Half Marathon', filteredData: data.filter(d => d.date >= new Date(2024, 6, 28))[0]},
+        'montreal': {label: 'Montreal Marathon', filteredData: data.filter(d => d.date >= new Date(2024, 8, 22))[0]},
     }
 
-    Object.keys(breakpoints).forEach(point => {
-        addUpdateBreakpoint(data, chart, x, y, breakpoints, point)
+    Object.keys(eventBreakpoints).forEach(key => {
+        addUpdateBreakpoint(data, chart, x, y, eventBreakpoints, key)
     })
 
     addUpdateBreakpoint(data, chart, x, y)
 
-    addUpdateCustomDateLine(chart, x, y, breakpoints, height)
+    // addUpdateCustomDateLine(chart, x, y, breakpoints, height)
+
+    const kmBreakpoints = {
+        '1000': {label: '1000 Km', filteredData: data.filter(d => d.value >= 1000)[0]},
+        '2000': {label: '2000 Km', filteredData: data.filter(d => d.value >= 2000)[0]},
+        '3000': {label: '3000 Km', filteredData: data.filter(d => d.value >= 3000)[0]},
+    }
+
+    Object.keys(kmBreakpoints).forEach(key => {
+        addUpdateKmLineBreakpoint(data, chart, x, y, kmBreakpoints, key)
+    })
 }

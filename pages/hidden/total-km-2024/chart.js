@@ -69,7 +69,7 @@ export const plotChart = async (chartProps) => {
     runRaceChart({
         type: 'area',
         chart,
-        raceData: buildRaceData({ data, slowestPoint: 1000 }),
+        raceData: buildRaceData({ data }),
         updateChart: (currentData) => updateAreaChart({
             updateAxis, x, y,
             updateArea: updateChartProps,
@@ -119,22 +119,22 @@ async function prepareData(year = 2024) {
     return data
 }
 
-function buildRaceData({ data, slowestPoint }) {
-    const breakpoints = [slowestPoint - 200, slowestPoint - 100, slowestPoint, slowestPoint + 100, slowestPoint + 200]
+function buildRaceData({ data }) {
+    const slowestPoint = d3.max(data, d => d.value)
+
+    const speeds = [3, 5, 7]
+    const breakpoints = [slowestPoint - 200, slowestPoint - 100, slowestPoint]
+
 
     const data1 = data.filter(d => d.value < breakpoints[0])
     const data2 = data.filter(d => (d.value >= breakpoints[0]) && ((d.value < breakpoints[1])))
-    const data3 = data.filter(d => (d.value >= breakpoints[1]) && ((d.value < breakpoints[2])))
-    const data4 = data.filter(d => (d.value >= breakpoints[2]) && ((d.value < breakpoints[3])))
-    const data5 = data.filter(d => (d.value >= breakpoints[3]) && ((d.value < breakpoints[4])))
-    const data6 = data.filter(d => d.value >= breakpoints[4])
+    const data3 = data.filter(d => (d.value >= breakpoints[1]))
 
-    const raceData = prepareRaceData({ data: data1, dateField: 'dateKey', k: 3 })
-    raceData.keyframes.push(...prepareRaceData({ data: data2, dateField: 'dateKey', k: 6 }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data3, dateField: 'dateKey', k: 10 }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data4, dateField: 'dateKey', k: 10 }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data5, dateField: 'dateKey', k: 6 }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data6, dateField: 'dateKey', k: 3 }).keyframes)
+    const raceData = prepareRaceData({ data: data1, dateField: 'dateKey', k: speeds[0] })
+    raceData.keyframes.push(...prepareRaceData({ data: data2, dateField: 'dateKey', k: speeds[1] }).keyframes)
+    raceData.keyframes.push(...prepareRaceData({ data: data3, dateField: 'dateKey', k: speeds[2] }).keyframes)
 
     return raceData
+
+    // return prepareRaceData({ data: data, dateField: 'dateKey', k: 1 })
 }
