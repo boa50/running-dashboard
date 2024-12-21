@@ -62,7 +62,7 @@ export const plotChart = async (chartProps) => {
         customAttrs: area => {
             area
                 .attr('fill', palette.blue)
-                .attr('opacity', 0.25)
+                .attr('opacity', 0.1)
         }
     })
 

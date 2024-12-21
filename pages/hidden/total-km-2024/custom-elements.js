@@ -43,8 +43,8 @@ const addUpdateBreakpoint = (data, chart, x, y, breakpoints, key) => {
                         .append('circle')
                         .attr('r', 3)
                         .attr('fill', 'white')
-                        .attr('stroke', palette.bluishGreen)
-                        .attr('stroke-width', 2)
+                        .attr('stroke', palette.vermillion)
+                        .attr('stroke-width', 1.5)
                         :null
                 )
                 .call(g =>
@@ -53,7 +53,7 @@ const addUpdateBreakpoint = (data, chart, x, y, breakpoints, key) => {
                         .attr('x', -8)
                         .attr('dominant-baseline', 'middle')
                         .attr('text-anchor', 'end')
-                        .attr('fill', id !== 'breakpoint-current' ? palette.bluishGreen : palette.blue)
+                        .attr('fill', id !== 'breakpoint-current' ? palette.vermillion : palette.blue)
                         .attr('font-size', '0.75rem')
                         .text(key !== undefined ? breakpoints[key].label : null)
                 )
