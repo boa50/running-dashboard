@@ -36,7 +36,8 @@ export const plotChart = async (chartProps) => {
         x,
         xFormat,
         hideXdomain: true,
-        xTicksRotate: true
+        xTicksRotate: true,
+        fontSize: '0.7rem'
     })
 
     const xTicks = [...Array(12).keys()].map(month => new Date(2024, month, 1))
