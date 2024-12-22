@@ -3,7 +3,7 @@ import { plotChart } from "./chart.js"
 
 const totalKmId = appendChartContainer({
     idNum: 1,
-    chartTitle: 'My Road to Run +3000km in 2024',
+    chartTitle: 'My road to +3000km running in 2024',
     containerAspectRatio: 'aspect-square',
     titleSize: 'text-xl'
 })
