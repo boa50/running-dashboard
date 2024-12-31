@@ -5,12 +5,13 @@ const totalKmId = appendChartContainer({
     idNum: 1,
     chartTitle: 'My road to +3000km running in 2024',
     containerAspectRatio: 'aspect-square',
-    titleSize: 'text-xl'
+    titleSize: 'text-2xl'
 })
 await new Promise(r => setTimeout(r, 1));
+
 
 plotChart(getChart({
     id: totalKmId,
     margin: getMargin({ left: 16, bottom: 64 }),
-    chartDimensions: getChartDimensions({ chartId: totalKmId, xl2: { width: 750 }, xl: { width: 500 } })
+    chartDimensions: getChartDimensions({ chartId: totalKmId, xl2: { width: 750 }, xl: { width: 700 }, sm: { width: 525 } })
 }))

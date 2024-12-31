@@ -123,19 +123,23 @@ async function prepareData(year = 2024) {
 function buildRaceData({ data }) {
     const slowestPoint = d3.max(data, d => d.value)
 
-    const speeds = [3, 5, 7]
-    const breakpoints = [slowestPoint - 200, slowestPoint - 100, slowestPoint]
+    const speeds = [3, 2, 1, 2, 5]
+    const breakpoints = [500, 1500, 3000, slowestPoint - 100, slowestPoint]
 
 
-    const data1 = data.filter(d => d.value < breakpoints[0])
-    const data2 = data.filter(d => (d.value >= breakpoints[0]) && ((d.value < breakpoints[1])))
-    const data3 = data.filter(d => (d.value >= breakpoints[1]))
-
-    const raceData = prepareRaceData({ data: data1, dateField: 'dateKey', k: speeds[0] })
-    raceData.keyframes.push(...prepareRaceData({ data: data2, dateField: 'dateKey', k: speeds[1] }).keyframes)
-    raceData.keyframes.push(...prepareRaceData({ data: data3, dateField: 'dateKey', k: speeds[2] }).keyframes)
+    let raceData
+    breakpoints.forEach((_, i) => {
+        if (i === 0) {
+            const dataTemp = data.filter(d => d.value < breakpoints[i])
+            raceData = prepareRaceData({ data: dataTemp, dateField: 'dateKey', k: speeds[i] })
+        } else if (i === breakpoints.length - 1) {
+            const dataTemp = data.filter(d => d.value >= breakpoints[i - 1])
+            raceData.keyframes.push(...prepareRaceData({ data: dataTemp, dateField: 'dateKey', k: speeds[i] }).keyframes)
+        } else {
+            const dataTemp = data.filter(d => (d.value >= breakpoints[i - 1]) && ((d.value < breakpoints[i])))
+            raceData.keyframes.push(...prepareRaceData({ data: dataTemp, dateField: 'dateKey', k: speeds[i] }).keyframes)
+        }
+    })
 
     return raceData
-
-    // return prepareRaceData({ data: data, dateField: 'dateKey', k: 1 })
 }
